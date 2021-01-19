@@ -45,7 +45,7 @@ app.post("/api/recipies", (req, res) => {
 
 app.put("/api/recipies/:id", (req, res) => {
 // search recipies using ID === req.params.id
-    const index = recipies.indexOf(recipie => recipie.id === parseInt(req.params.id));
+    const index = recipies.find(recipie => recipie.id === parseInt(req.params.id));
     // if (!recipie) retrun 404 error
     if(!recipie) res.status(404).send("The recipie with the given ID was not found");
     
