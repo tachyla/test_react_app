@@ -1,4 +1,4 @@
-// const Joi = require("joi");
+const Joi = require("joi");
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -24,7 +24,18 @@ app.get("/api/recipies/:id", (req, res) => {
     // if no id exists return error
     if(!recipie) res.status(404).send("The recipie with the given ID was not found");
     
-    // validate input
+    // include schema & validate input
+    const schema = Joi.object({
+        name: Joi.string()
+        .min(3)
+        .required()
+    });
+
+    const result = schema.validate(req.body);
+    // if result is invalid return 400 error bad request
+    if(!result) res.status(400).send(result.error.details[0].message);
+    console.log(result); //this result returns an object that can only have a "value": or "error":
+
     // if recipies.id exists return recipie object
     res.send(recipie);
 });
@@ -33,6 +44,14 @@ app.post("/api/recipies", (req, res) => {
     if(!req.body.name || req.body.name.length < 3) {
         res.status(400).send("Name must be minimum 3 characters");
     
+    const schema = Joi.object({
+        name: Joi.string()
+        .min(3)
+        .required()
+    });
+
+   const result = schema.validate(req.body);
+   if(!result) res.status(400).send(result.error.details[0].message);
     const recipie = {
         id: recipies.length + 1,
         name: req.body.name
@@ -56,14 +75,14 @@ app.put("/api/recipies/:id", (req, res) => {
     });
 
     const result = schema.validate(req.body);
-    console.log(result);
+    // console.log(result);
 
     // if inVALID input, send 400 error
-    if(!req.body.name || req.body.name.length < 3) {
-        res.status(400).send("The recipie name must have minimum 3 characters")};
+    if(!result) res.status(400).send(result.error.details[0].message);
+    
     // update recipie object
-    // return the updated course 
     recipie.name = req.body.name;
+    // return the updated course 
     res.send(recipie);
 });
 
