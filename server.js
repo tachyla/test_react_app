@@ -76,10 +76,9 @@ app.put("/api/recipies/:id", (req, res) => {
 
     const result = schema.validate(req.body);
     // console.log(result);
-
     // if inVALID input, send 400 error
     if(!result) res.status(400).send(result.error.details[0].message);
-    
+
     // update recipie object
     recipie.name = req.body.name;
     // return the updated course 
