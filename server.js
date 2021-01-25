@@ -6,7 +6,8 @@ app.use(express.json());
 const recipies = [
     {id: 1, name: "Sweet Potatoes", ingredients: "5 sweet potatoes, 2 sticks butter, 3 cups sugar, 1 tsp cinnamon"},
     {id: 2, name: "Peach Cobbler", ingredients: "1 can peaches in heavy syrup, 1 roll pie crust, 1 cup sugar"},
-    {id: 3, name: "Fried Chicken", ingredients: "1lb chicken wings, 1 pkg Lefties seasoning, 2 tbs garlic powder, 1 tbs pepper"}
+    {id: 3, name: "Fried Chicken", ingredients: "1lb chicken wings, 1 pkg Lefties seasoning, 2 tbs garlic powder, 1 tbs pepper"},
+    {id: 4, name: "Pari's chicken dip", ingredients: "1lb chicken, franks red hot sauce"}
 ]
 
 app.get("/", (req, res) => {
@@ -75,7 +76,7 @@ app.put("/api/recipies/:id", (req, res) => {
     });
 
     const result = schema.validate(req.body);
-    // console.log(result);
+
     // if inVALID input, send 400 error
     if(!result) res.status(400).send(result.error.details[0].message);
 
@@ -84,6 +85,13 @@ app.put("/api/recipies/:id", (req, res) => {
     // return the updated course 
     res.send(recipie);
 });
+
+app.delete("/api/recipies/:id", (req, res) =>{
+    const index = recipies.indexOf(recipie => recipie.vendor_id === parseInt(req.params.id));
+    console.log(index);
+    recipies.splice(index, 1);
+    res.send(recipies); 
+})
 
 // PORT 
 const port = process.env.PORT || 1913;
