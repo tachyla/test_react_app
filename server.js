@@ -1,96 +1,16 @@
 const Joi = require("joi");
+const recipies = require("./routes/recipies");
+const MongoClient = require("mongodb").MongoClient;
 const express = require("express");
-const app = express();
-app.use(express.json());
 
-const recipies = [
-    {id: 1, name: "Sweet Potatoes", ingredients: "5 sweet potatoes, 2 sticks butter, 3 cups sugar, 1 tsp cinnamon"},
-    {id: 2, name: "Peach Cobbler", ingredients: "1 can peaches in heavy syrup, 1 roll pie crust, 1 cup sugar"},
-    {id: 3, name: "Fried Chicken", ingredients: "1lb chicken wings, 1 pkg Lefties seasoning, 2 tbs garlic powder, 1 tbs pepper"},
-    {id: 4, name: "Pari's chicken dip", ingredients: "1lb chicken, franks red hot sauce"}
-]
+const app = express();
+
+app.use(express.json());
+// this helps use DRY and remove route path from recipies
+app.use("/api/recipies", recipies);
 
 app.get("/", (req, res) => {
     res.send("Hello World");
-})
-
-app.get("/api/recipies", (req, res) => {
-    res.send(recipies);
-});
-
-app.get("/api/recipies/:id", (req, res) => {
-    // search recipies arr using ID === to the req.params.id
-    const recipie = recipies.find(recipie => recipie.id === parseInt(req.params.id));
-   
-    // if no id exists return error
-    if(!recipie) res.status(404).send("The recipie with the given ID was not found");
-    
-    // include schema & validate input
-    const schema = Joi.object({
-        name: Joi.string()
-        .min(3)
-        .required()
-    });
-
-    const result = schema.validate(req.body);
-    // if result is invalid return 400 error bad request
-    if(!result) res.status(400).send(result.error.details[0].message);
-    console.log(result); //this result returns an object that can only have a "value": or "error":
-
-    // if recipies.id exists return recipie object
-    res.send(recipie);
-});
-
-app.post("/api/recipies", (req, res) => {
-    if(!req.body.name || req.body.name.length < 3) {
-        res.status(400).send("Name must be minimum 3 characters");
-    
-    const schema = Joi.object({
-        name: Joi.string()
-        .min(3)
-        .required()
-    });
-
-   const result = schema.validate(req.body);
-   if(!result) res.status(400).send(result.error.details[0].message);
-    const recipie = {
-        id: recipies.length + 1,
-        name: req.body.name
-    };
-     
-    recipies.push(recipie);
-    res.send(recipie);
-    }
-});
-
-app.put("/api/recipies/:id", (req, res) => {
-// search recipies using ID === req.params.id
-    const index = recipies.find(recipie => recipie.id === parseInt(req.params.id));
-    // if (!recipie) retrun 404 error
-    if(!recipie) res.status(404).send("The recipie with the given ID was not found");
-    
-    const schema = Joi.object({
-        name: Joi.string()
-        .min(3)
-        .required()
-    });
-
-    const result = schema.validate(req.body);
-
-    // if inVALID input, send 400 error
-    if(!result) res.status(400).send(result.error.details[0].message);
-
-    // update recipie object
-    recipie.name = req.body.name;
-    // return the updated course 
-    res.send(recipie);
-});
-
-app.delete("/api/recipies/:id", (req, res) =>{
-    const index = recipies.indexOf(recipie => recipie.vendor_id === parseInt(req.params.id));
-    console.log(index);
-    recipies.splice(index, 1);
-    res.send(recipies); 
 })
 
 // PORT 
