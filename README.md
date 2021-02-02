@@ -1,10 +1,11 @@
-Hi Im TaChyla Murray & My favorite hobbie is to develop
+Hi Im TaChyla Murray & My favorite hobby is to develop
 Fullstack applications with a Nodejs backend
 
 I enjoy creating methods to communicate with 
 servers, and refactoring my code to up my coding
 best practices. 
 
+This application is the start of a Family Recipie application built for storing my grandmother's recipies!
 
 You can contact me via email tachylad.murray@gmail if you'd like to learn more about my applications infrastructure.
 
