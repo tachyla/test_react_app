@@ -9,45 +9,41 @@ const recipies = [
     {id: 4, name: "Pari's chicken dip", ingredients: "1lb chicken, franks red hot sauce"}
 ];
 
+// include schema & validate input
+const schema = Joi.object({
+    name: Joi.string()
+    .min(3)
+    .required()
+});
+
+// GET request
 router.get("/", (req, res) => {
     res.send(recipies);
 });
 
+// GET request using vendors/:id endpoint
 router.get("/:id", (req, res) => {
     // search recipies arr using ID === to the req.params.id
     const recipie = recipies.find(recipie => recipie.id === parseInt(req.params.id));
    
     // if no id exists return error
     if(!recipie) res.status(404).send("The recipie with the given ID was not found");
-    
-    // include schema & validate input
-    const schema = Joi.object({
-        name: Joi.string()
-        .min(3)
-        .required()
-    });
 
     const result = schema.validate(req.body);
     // if result is invalid return 400 error bad request
     if(!result) res.status(400).send(result.error.details[0].message);
-    console.log(result); //this result returns an object that can only have a "value": or "error":
+    //console.log(result); //this result returns an object that can only have a "value": or "error":
 
     // if recipies.id exists return recipie object
     res.send(recipie);
 });
 
+//POST request to /vendors endpoint 
 router.post("/", (req, res) => {
-    if(!req.body.name || req.body.name.length < 3) {
-        res.status(400).send("Name must be minimum 3 characters");
-    
-        const schema = Joi.object({
-            name: Joi.string()
-            .min(3)
-            .required()
-        });
-        
-        const result = schema.validate(req.body);
-        if(!result) res.status(400).send(result.error.details[0].message);
+    const result = schema.validate(req.body);
+    if(result.error){
+        res.status(400).send(result.error.details[0].message);
+        return;
     }
 
     const recipie = {
@@ -56,23 +52,18 @@ router.post("/", (req, res) => {
     };
 
     recipies.push(recipie);
-    res.send(recipie);
+    res.send(recipies);
 });
 
+// PUT request using vendors/:id endpoint
 router.put("/:id", (req, res) => {
 // search recipies using ID === req.params.id
     const index = recipies.find(recipie => recipie.id === parseInt(req.params.id));
     if(!recipie) res.status(404).send("The recipie with the given ID was not found");
-    
-    const schema = Joi.object({
-        name: Joi.string()
-        .min(3)
-        .required()
-    });
+
 
     const result = schema.validate(req.body);
-
-    if(!result) res.status(400).send(result.error.details[0].message);
+    if(result.error) res.status(400).send(result.error.details[0].message);
 
     // update recipie object
     recipie.name = req.body.name;
@@ -80,9 +71,9 @@ router.put("/:id", (req, res) => {
     res.send(recipie);
 });
 
+//DELETE request using vendors/:id endpoint
 router.delete("/:id", (req, res) =>{
     const index = recipies.indexOf(recipie => recipie.vendor_id === parseInt(req.params.id));
-    console.log(index);
     recipies.splice(index, 1);
     res.send(recipies); 
 });
